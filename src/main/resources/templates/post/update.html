@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>게시글 수정</title>
+</head>
+<style>
+    .field-err {
+  color: red;
+  font-size: 0.85rem;
+  margin-top: 3px;
+}
+  .content_area {
+        width: 600px;
+    height: 150px;
+    font-size: 1rem;
+    }
+</style>
+
+<body>
+<h3>게시글 수정</h3>
+<form th:object="${updateForm}" th:action="@{/posts/{id}/edit(id=*{postId})}" method="post">
+  <div><label>게시글 아이디</label><input type="text" th:field="*{postId}" readonly></div>
+  <div><label>작성자</label><input type="text" th:field="*{name}" readonly></div>
+  <div>
+    <label>제목</label>
+    <input type="text" th:field="*{title}">
+    <div th:if="${#fields.hasErrors('title')}" class="field-err" th:errors="*{title}"></div>
+  </div>
+  <div>
+    <label>내용</label>
+    <textarea th:field="*{content}" id="content" class="content_area"></textarea>
+    <div th:if="${#fields.hasErrors('content')}" class="field-err" th:errors="*{content}"></div>
+  </div>
+  <div><label>작성 날짜</label><input type="text" th:value="${updateForm.dateCreated}" readonly></div>
+  <div><label>수정 날짜</label><input type="datetime-local"
+                                  name="revisedDate"
+                                  th:value="${#temporals.format(updateForm.revisedDate, 'yyyy-MM-dd''T''HH:mm')}"
+                                  readonly></div>
+
+  <div>
+    <button type="submit" id="btnSave">저장</button>
+    <button type="button" id="btnBack">목록</button>
+  </div>
+</form>
+<script>
+  const $btnBack = document.getElementById('btnBack');
+  $btnBack.addEventListener('click', e=>{
+    location.href='/posts';
+  },false);
+</script>
+</body>
+</html>

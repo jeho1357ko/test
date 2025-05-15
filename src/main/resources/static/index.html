@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>유토피아</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f4f4;
+      color: #222;
+    }
+
+    .headline {
+      background-color: #1e3a8a;
+      color: white;
+      padding: 2rem;
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: bold;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .subtext {
+      max-width: 900px;
+      margin: 3rem auto 2rem;
+      padding: 0 1.5rem;
+      font-size: 1.5rem;
+      line-height: 1.8;
+      text-align: center;
+    }
+
+    .subtext span {
+      font-weight: bold;
+      color: #dc2626;
+    }
+
+    .center-btn {
+      text-align: center;
+      margin-top: 2rem;
+    }
+
+    #btnGoPost {
+      font-size: 1.2rem;
+      padding: 0.75rem 2rem;
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    #btnGoPost:hover {
+      background-color: #1d4ed8;
+    }
+  </style>
+</head>
+<body>
+
+<div class="headline">정치인 TMI 게시판에 오신 것을 환영합니다</div>
+
+<div class="subtext">
+  <h1>이념 전쟁을 넘어 <span>타협</span>의 길로</h1>
+  <p><strong>평등 vs 자유</strong>, 이제는 공허한 구호가 아닌 <span>공평</span>과 <span>책임</span>으로 현실을 말할 때입니다.<br>
+    이데올로기를 깨고, 패러다임을 바꾸는 길에 당신의 의견을 남겨주세요.</p>
+</div>
+
+<div class="center-btn">
+  <button id="btnGoPost">게시판으로 이동</button>
+</div>
+
+<script>
+  const $btnGoPost = document.getElementById('btnGoPost');
+  $btnGoPost.addEventListener('click', e => {
+    location.href = '/posts';
+  }, false);
+</script>
+
+</body>
+</html>

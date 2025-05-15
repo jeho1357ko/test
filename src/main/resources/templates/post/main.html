@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>게시판</title>
+</head>
+<style>
+  table {
+    outline: 1px black solid;
+  }
+   form{
+       display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+</style>
+<body>
+<form action="/posts/del" method="post">
+  <table>
+    <thead>
+    <tr>
+      <th>선택</th>
+      <th>게시글ID</th>
+      <th>작성자</th>
+      <th>제목</th>
+      <th>작성 날짜</th>
+      <th>수정 날짜</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="post : ${list}">
+      <td><input type="checkbox" name="postId" th:value="${post.postId}"></td>
+      <td th:text="${post.postId}">1</td>
+      <td th:text="${post.name}">명제호</td>
+      <td> <a th:href="@{/posts/{id}(id=${post.postId})}"
+              th:text="${post.title}">이재명은 대통령이 될수있나?</a></td>
+      <td th:text="${post.dateCreated}">2025-01-01</td>
+      <td th:text="${post.revisedDate}"></td>
+    </tr>
+    </tbody>
+
+  </table>
+  <div>
+    <dialog id="modalDel">
+      <p>선택한 게시글을 삭제하시겠습니까?</p>
+      <button class="btnYes">예</button>
+      <button class="btnNo">아니오</button>
+    </dialog>
+    <button type="button" id="btnDeleteAll">삭제</button>
+    <button type="button" id="btnAdd">등록</button>
+  </div>
+</form>
+
+<script>
+  const $btnAdd = document.getElementById('btnAdd');
+  $btnAdd.addEventListener('click', e =>{
+    location.href = '/posts/add';
+  },false);
+
+
+  const $btnDel = document.getElementById('btnDeleteAll');
+  const $modalDel = document.getElementById('modalDel');
+  const $btnYes = document.querySelector('.btnYes');
+  const $btnNo = document.querySelector('.btnNo');
+  const $form = document.querySelector('form');
+
+  // 등록 버튼
+  $btnAdd.addEventListener('click', e => {
+    location.href = '/posts/add';
+  });
+
+  // 삭제 버튼 누르면 모달 띄우기
+  $btnDel.addEventListener('click', e => {
+    $modalDel.showModal();
+  });
+
+  // 예 버튼 → 폼 제출
+  $btnYes.addEventListener('click', () => {
+    $modalDel.close('yes');
+  });
+
+  // 아니오 버튼 → 모달 닫기
+  $btnNo.addEventListener('click', () => {
+    $modalDel.close('no');
+  });
+
+  // 모달 닫힌 후 판단
+  $modalDel.addEventListener('close', () => {
+    if ($modalDel.returnValue === 'yes') {
+      console.log('삭제 처리됨');
+      $form.submit();
+    } else {
+      console.log('삭제 취소됨');
+    }
+  });
+
+
+
+
+</script>
+</body>
+</html>

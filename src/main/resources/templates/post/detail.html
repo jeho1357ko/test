@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>게시글 세부내용</title>
+  <style>
+    .content_area {
+        width: 600px;
+    height: 150px;
+    font-size: 1rem;
+    }
+    form{
+       display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+
+<form action="/posts/del"  method="post">
+  <h3>게시글 세부 내용</h3>
+  <div><label for="">게시글 아이디</label><input type="text" name="postId" id="postId" th:value="${detailForm.postId}" readonly></div>
+  <div>
+    <span><label for="">작성자</label><input type="text" name="name" id="" th:value="${detailForm.name}" readonly></span>
+    <span><label for="">제목</label><input type="text" name="title" id="" th:value="${detailForm.title}" readonly></span>
+  </div>
+  <div><label for="">내용</label><textarea name="content" id="" class="content_area" readonly>[[${detailForm.content}]]</textarea></div>
+  <div>
+    <span><label for="">작성 날짜</label><input type="datetime-local" name="dateCreated" th:value="${#temporals.format(detailForm.dateCreated, 'yyyy-MM-dd''T''HH:mm')}" readonly></span>
+    <span><label for="">수정 날짜</label><input type="datetime-local" name="revisedDate" th:value="${#temporals.format(detailForm.revisedDate, 'yyyy-MM-dd''T''HH:mm')}" readonly></span>
+  </div>
+  <div>
+    <button type="button" id="btnUpdate">수정</button>
+    <dialog id="modalDel">
+      <p>선택한 게시글을 삭제하시겠습니까?</p>
+      <button type="button" class="btnYes">예</button>
+      <button type="button" class="btnNo">아니오</button>
+    </dialog>
+    <button type="button" id="btnDelete">삭제</button>
+
+    <button type="button" id="btnFindAll">목록</button>
+  </div>
+</form>
+
+
+<script>
+
+  const $btnUpdate = document.getElementById('btnUpdate');
+ $btnUpdate.addEventListener('click',e=>{
+   const $postId = document.getElementById('postId');
+   const postId = $postId.value;
+   location.href = `/posts/${postId}/edit`;  //GET http://localhost:9080/products/2/edit
+ },false);
+
+
+<!--const $btnDelete = document.getElementById('btnDelete');-->
+<!--$btnDelete.addEventListener('click' , e =>{-->
+<!--  const $postId = document.getElementById('postId');-->
+<!--    const id = $postId.value;-->
+<!--    if(window.confirm('삭제하시겠습니까?')) {-->
+<!--    location.href = `/posts/${id}/del`;-->
+<!--    }-->
+<!--},false);-->
+
+const $btnFindAll = document.getElementById('btnFindAll');
+$btnFindAll.addEventListener('click', e=>{
+ location.href='/posts'
+},false);
+
+    const $btnDel = document.getElementById('btnDelete');
+  const $modalDel = document.getElementById('modalDel');
+  const $btnYes = document.querySelector('.btnYes');
+  const $btnNo = document.querySelector('.btnNo');
+  const $form = document.querySelector('form');
+
+
+  // 삭제 버튼 누르면 모달 띄우기
+  $btnDel.addEventListener('click', e => {
+    $modalDel.showModal();
+  });
+
+  // 예 버튼 → 폼 제출
+  $btnYes.addEventListener('click', () => {
+    $modalDel.close('yes');
+  });
+
+  // 아니오 버튼 → 모달 닫기
+  $btnNo.addEventListener('click', () => {
+    $modalDel.close('no');
+  });
+
+  // 모달 닫힌 후 판단
+  $modalDel.addEventListener('close', () => {
+    if ($modalDel.returnValue === 'yes') {
+      console.log('삭제 처리됨');
+      $form.submit();
+    } else {
+      console.log('삭제 취소됨');
+    }
+  });
+
+</script>
+</body>
+</html>

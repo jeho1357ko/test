@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>등록</title>
+  <style>
+    .content_area {
+          width: 600px;
+      height: 150px;
+      font-size: 1rem;
+      }
+    form {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .field-err {
+  color: red;
+  font-size: 0.85rem;
+  margin-top: 3px;
+}
+  </style>
+</head>
+<body>
+<form th:object="${saveForm}" th:action="@{/posts/add}" method="POST" id="frm">
+
+  <div class="headline">
+    <span>
+      <label>제목</label>
+      <input type="text" th:field="*{title}" id="title" />
+      <div th:if="${#fields.hasErrors('title')}" class="field-err" th:errors="*{title}"></div>
+      <div class="field-err" id="errTitle"></div>
+    </span>
+    <span>
+      <label>작성자</label>
+      <input type="text" th:field="*{name}" id="name" />
+      <div th:if="${#fields.hasErrors('name')}" class="field-err" th:errors="*{name}"></div>
+      <div class="field-err" id="errName"></div>
+    </span>
+    <hr>
+  </div>
+
+  <div>
+    <label>내용</label>
+  </div>
+  <div>
+    <textarea class="content_area" th:field="*{content}" id="content"></textarea>
+    <div th:if="${#fields.hasErrors('content')}" class="field-err" th:errors="*{content}"></div>
+    <div class="field-err" id="errContent"></div>
+  </div>
+  <div class="AllButton">
+    <button type="submit" id="btnAdd">등록</button>
+    <button type="button" id="btnFindAll">취소</button>
+  </div>
+</form>
+<script type="module">
+  const title = document.getElementById('title');
+  const errTitle = document.getElementById('errTitle');
+
+  const name = document.getElementById('name');
+  const errName = document.getElementById('errName');
+
+  const content = document.getElementById('content');
+  const errContent = document.getElementById('errContent');
+
+  const frm = document.getElementById('frm');
+    import { getBytesSize }  from '/js/common.js';
+
+   // 제목
+   const btnAdd = document.getElementById('btnAdd');
+   btnAdd.addEventListener('click', e=>{
+      e.preventDefault();
+      if(title.value.length == 0 ){
+        console.log('제목을 입력하세요!');
+        errTitle.textContent = '제목을 입력하시오!';
+        title.focus();
+        return;
+      }else if(getBytesSize(title.value) > 60){
+        errTitle.textContent = '제목은 20자리를 넘을수없습니다!';
+        title.focus();
+        return;
+      }else {
+        errTitle.textContent = '';
+      }
+      // 작성자
+
+      if(name.value.length == 0 ){
+        errName.textContent = '이름을 입력하시오!';
+        name.focus();
+        return;
+      }else if(getBytesSize(name.value) > 60){
+        errName.textContent = '이름은 6자리를 넘을수없습니다!';
+        name.focus();
+      return;
+      }else {
+        errName.textContent = '';
+      }
+
+      //내용
+      if(content.value.length == 0 ){
+        errContent.textContent = '내용을 입력하시오!';
+        content.focus();
+        return;
+      }else {
+        errContent.textContent = '';
+      }
+
+      frm.submit();
+
+    },false);
+
+
+     const $btnFindAll = document.getElementById('btnFindAll');
+    $btnFindAll.addEventListener('click', e =>{
+      location.href='/posts';
+    },false);
+
+</script>
+</body>
+</html>
