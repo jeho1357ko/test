@@ -16,8 +16,28 @@
       justify-content: center;
       align-items: center;
     }
+  div{
+    display: flex;
+
+      justify-content: center;
+      align-items: center;
+  }
 </style>
 <body>
+
+<div>
+    <span th:if="${session.loginMember == null}">
+      <a th:href="@{/login}">로그인</a> |
+      <a th:href="@{/join}">회원가입</a>
+    </span>
+  <span th:if="${session.loginMember != null}">
+      <strong th:text="${session.loginMember.nickname}">닉네임</strong>
+      <form th:action="@{/logout}" method="post" style="display:inline;">
+        <button type="submit">로그아웃</button>
+      </form>
+    </span>
+</div>
+
 <form action="/posts/del" method="post">
   <table>
     <thead>
@@ -43,6 +63,8 @@
     </tbody>
 
   </table>
+</form>
+<hr>
   <div>
     <dialog id="modalDel">
       <p>선택한 게시글을 삭제하시겠습니까?</p>
@@ -52,7 +74,7 @@
     <button type="button" id="btnDeleteAll">삭제</button>
     <button type="button" id="btnAdd">등록</button>
   </div>
-</form>
+
 
 <script>
   const $btnAdd = document.getElementById('btnAdd');

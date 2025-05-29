@@ -18,6 +18,7 @@
       align-items: center;
     }
   </style>
+
 </head>
 <body>
 
@@ -46,63 +47,116 @@
   </div>
 </form>
 
+<div id="commentBox"></div>
+<div id="pagination-container"></div>
+<button id="btnDeleteComments">댓글 삭제</button>
 
-<script>
+<script type="module">
+  import { ajax, PaginationUI } from '/js/comment.js';
 
-  const $btnUpdate = document.getElementById('btnUpdate');
- $btnUpdate.addEventListener('click',e=>{
-   const $postId = document.getElementById('postId');
-   const postId = $postId.value;
-   location.href = `/posts/${postId}/edit`;  //GET http://localhost:9080/products/2/edit
- },false);
+ const postId = document.getElementById('postId').value;
+ const commentBox = document.getElementById('commentBox');
 
+ const pagination = new PaginationUI('pagination-container', loadComments);
+ pagination.setRecordsPerPage(5);
+ pagination.setPagesPerPage(5);
 
-<!--const $btnDelete = document.getElementById('btnDelete');-->
-<!--$btnDelete.addEventListener('click' , e =>{-->
-<!--  const $postId = document.getElementById('postId');-->
-<!--    const id = $postId.value;-->
-<!--    if(window.confirm('삭제하시겠습니까?')) {-->
-<!--    location.href = `/posts/${id}/del`;-->
-<!--    }-->
-<!--},false);-->
+ async function loadComments(page = 1) {
+   const url = `/api/comments/paging?pid=${postId}&pageNo=${page}&numOfRows=5`;
+   const result = await ajax.get(url);
+   commentBox.innerHTML = '';
 
-const $btnFindAll = document.getElementById('btnFindAll');
-$btnFindAll.addEventListener('click', e=>{
- location.href='/posts'
-},false);
+   if (result && result.body) {
+     result.body.forEach(comment => {
+       const div = document.createElement('div');
+       div.setAttribute('data-id', comment.commentId);
+       div.innerHTML = `
+         <input type="checkbox" class="comment-checkbox" value="${comment.commentId}">
+         <strong>${comment.name}</strong>:
+         <span class="comment-content">${comment.content}</span>
+         <button class="btn-edit">수정</button>
+       `;
+       commentBox.appendChild(div);
+     });
 
-    const $btnDel = document.getElementById('btnDelete');
-  const $modalDel = document.getElementById('modalDel');
-  const $btnYes = document.querySelector('.btnYes');
-  const $btnNo = document.querySelector('.btnNo');
-  const $form = document.querySelector('form');
+     pagination.setTotalRecords(result.paging.totalCount);
+     pagination.render();
+   } else {
+     commentBox.innerHTML = '댓글이 없습니다.';
+   }
+ }
 
+ // 댓글 수정/저장 이벤트 처리
+ commentBox.addEventListener('click', async e => {
+   const parent = e.target.closest('div');
 
-  // 삭제 버튼 누르면 모달 띄우기
-  $btnDel.addEventListener('click', e => {
-    $modalDel.showModal();
+   if (e.target.classList.contains('btn-edit')) {
+     const contentSpan = parent.querySelector('.comment-content');
+     const original = contentSpan.textContent;
+
+     const input = document.createElement('input');
+     input.value = original;
+     input.classList.add('edit-input');
+
+     const saveBtn = document.createElement('button');
+     saveBtn.textContent = '저장';
+     saveBtn.classList.add('btn-save');
+
+     contentSpan.replaceWith(input);
+     e.target.replaceWith(saveBtn);
+   }
+
+ if (e.target.classList.contains('btn-save')) {
+  const id = parent.getAttribute('data-id');
+  const input = parent.querySelector('.edit-input');
+  const newContent = input.value;
+  const name = parent.querySelector('strong').textContent;
+
+  await ajax.patch(`/api/comments/${id}`, {
+    name: name,
+    content: newContent
   });
 
-  // 예 버튼 → 폼 제출
-  $btnYes.addEventListener('click', () => {
-    $modalDel.close('yes');
+  loadComments(pagination.state.currentPage);
+}
+ });
+
+ // 체크박스 삭제 처리
+ document.getElementById('btnDeleteComments').addEventListener('click', async () => {
+   const checked = document.querySelectorAll('.comment-checkbox:checked');
+   const ids = Array.from(checked).map(cb => cb.value);
+
+   for (let id of ids) {
+     await ajax.delete(`/api/comments/${id}`);
+   }
+
+   loadComments(pagination.state.currentPage);
+ });
+
+  document.getElementById('btnUpdate').addEventListener('click', () => {
+    const postId = document.getElementById('postId').value;
+    window.location.href = `/posts/edit/${postId}`; // 수정 페이지로 이동
   });
 
-  // 아니오 버튼 → 모달 닫기
-  $btnNo.addEventListener('click', () => {
-    $modalDel.close('no');
+  document.getElementById('btnDelete').addEventListener('click', () => {
+    const dialog = document.getElementById('modalDel');
+    dialog.showModal();
   });
 
-  // 모달 닫힌 후 판단
-  $modalDel.addEventListener('close', () => {
-    if ($modalDel.returnValue === 'yes') {
-      console.log('삭제 처리됨');
-      $form.submit();
-    } else {
-      console.log('삭제 취소됨');
-    }
+  document.querySelector('.btnYes').addEventListener('click', () => {
+    document.querySelector('form').submit(); // 삭제 form submit
   });
 
+  document.querySelector('.btnNo').addEventListener('click', () => {
+    document.getElementById('modalDel').close(); // 삭제 취소
+  });
+
+  document.getElementById('btnFindAll').addEventListener('click', () => {
+    window.location.href = '/posts'; // 목록 페이지로 이동
+  });
+
+ loadComments(1);
 </script>
+
 </body>
 </html>
