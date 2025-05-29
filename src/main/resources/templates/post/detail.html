@@ -6,19 +6,72 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>게시글 세부내용</title>
   <style>
-    .content_area {
-        width: 600px;
-    height: 150px;
-    font-size: 1rem;
+    .comment-item {
+      border-bottom: 1px solid #e0e0e0;
+      padding: 10px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
     }
-    form{
-       display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-    }
-  </style>
 
+    .comment-content-box {
+      flex: 1;
+    }
+
+    .comment-header {
+      font-size: 0.9rem;
+      color: #555;
+      display: flex;
+      gap: 10px;
+    }
+
+    .comment-writer {
+      font-weight: bold;
+    }
+
+    .comment-body {
+      margin-top: 5px;
+      font-size: 1rem;
+      color: #333;
+    }
+
+    .comment-actions {
+      margin-top: 5px;
+    }
+
+    .comment-actions button {
+      background: #f2f2f2;
+      border: 1px solid #ccc;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    #commentForm {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+    }
+
+    #commentForm input {
+      padding: 5px;
+      font-size: 0.9rem;
+    }
+
+    #commentForm button {
+      padding: 5px 10px;
+      font-size: 0.9rem;
+      background: #03c75a;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    .content_area {
+  width: 600px;
+  height: 300px;
+  font-size: 1rem;
+  padding: 10px;
+}
+  </style>
 </head>
 <body>
 
@@ -63,11 +116,11 @@
  const commentBox = document.getElementById('commentBox');
 
  const pagination = new PaginationUI('pagination-container', loadComments);
- pagination.setRecordsPerPage(5);
+ pagination.setRecordsPerPage(10);
  pagination.setPagesPerPage(5);
 
  async function loadComments(page = 1) {
-   const url = `/api/comments/paging?pid=${postId}&pageNo=${page}&numOfRows=5`;
+   const url = `/api/comments/paging?pid=${postId}&pageNo=${page}&numOfRows=${pagination.state.recordsPerPage}`;
    const result = await ajax.get(url);
    commentBox.innerHTML = '';
 
